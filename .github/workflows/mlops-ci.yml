@@ -52,7 +52,7 @@ jobs:
             pkill -f app.py || true
             
             # Chạy lại app mới dưới nền (nohup) 
-            nohup python3 app.py > app.log 2>&1 & disown
-            sleep 2
+            nohup python3 app.py > app.log 2>&1 < /dev/null &
+            sleep 3
             echo "DEPLOYMENT SUCCESSFUL!"
             exit 0
