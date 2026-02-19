@@ -53,5 +53,6 @@ jobs:
             
             # Chạy lại app mới dưới nền (nohup) 
             nohup python app.py > app.log 2>&1 &
-            
+            sleep 2
             echo "DEPLOYMENT SUCCESSFUL!"
+            exit 0
