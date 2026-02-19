@@ -12,7 +12,7 @@ except:
 
 @app.route('/')
 def home():
-    return "<h1>California Housing Price Prediction API 🏠</h1>"
+    return "<h1>California Housing Price Prediction API 🏠. Update version 2.</h1>"
 
 @app.route('/predict', methods=['POST'])
 def predict():
