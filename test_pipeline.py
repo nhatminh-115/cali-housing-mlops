@@ -1,33 +1,43 @@
 import pytest
 import json
-from app import app
+import numpy as np
+from unittest.mock import MagicMock
+import app as flask_app
 
 @pytest.fixture
 def client():
     """
-    Khoi tao moi truong kiem thu (Test Fixture).
-    Gia lap mot client de gui cac HTTP request ma khong can khoi dong server that.
+    Khoi tao moi truong kiem thu cach ly (Hermetic Test Fixture).
+    Su dung ky thuat Mocking de gia lap mo hinh toan hoc, loai bo su phu thuoc vao file I/O.
     """
-    app.config['TESTING'] = True
-    with app.test_client() as client:
+    # 1. Khoi tao mo hinh gia lap (Mock Object)
+    mock_model = MagicMock()
+    
+    # 2. Xac dinh hanh vi: Ham predict luon tra ve mot vector Numpy chua hang so 4.526
+    mock_model.predict.return_value = np.array([4.526])
+    
+    # 3. Tiem phu thuoc (Inject): Ghi de bien 'model' toan cuc trong file app.py bang mo hinh gia
+    flask_app.model = mock_model
+    
+    # Khoi tao test client
+    flask_app.app.config['TESTING'] = True
+    with flask_app.app.test_client() as client:
         yield client
 
 def test_home_page(client):
     """
-    Kiem tra khoi Frontend (Giao dien).
-    Xac thuc route '/' hoat dong (200 OK) va render dung file HTML.
+    Kiem tra chot chan Frontend.
+    Dam bao DOM duoc tra ve voi ma trang thai 200.
     """
     response = client.get('/')
     assert response.status_code == 200
-    # Kiem tra su ton tai cua the title de xac nhan DOM duoc load thanh cong
     assert b"<title>Cali Housing Predictor</title>" in response.data
 
 def test_predict_api_valid(client):
     """
-    Kiem tra khoi Model Inference.
-    Xac thuc API co the tiep nhan vector dac trung x va tra ve du doan y_hat.
+    Kiem tra chu trinh tich chap du lieu (Data Serialization).
+    Truyen vector x vao API va ky vong he thong tra ve gia tri tu ham Mock.
     """
-    # Dinh nghia vector dau vao x
     payload = {
         "MedInc": 8.3252,
         "HouseAge": 41.0,
@@ -39,24 +49,20 @@ def test_predict_api_valid(client):
         "Longitude": -122.23
     }
     
-    # Gui POST request voi payload duoc Serialize thanh JSON
     response = client.post('/predict', 
                            data=json.dumps(payload),
                            content_type='application/json')
     
     assert response.status_code == 200
     data = json.loads(response.data)
-    
-    # Xac thuc ket qua tra ve phai chua tu khoa 'predicted_price_usd' va phai la so thuc (float)
     assert 'predicted_price_usd' in data
     assert isinstance(data['predicted_price_usd'], float)
 
 def test_predict_api_missing_feature(client):
     """
-    Kiem tra co che xu ly ngoai le (Exception Handling).
-    Khi client gui thieu dac trung, he thong phai bat duoc KeyError va tra ve loi 400.
+    Kiem tra co che kiem soat ngoai le (Exception Handling).
+    Nhan tao loi khuyet thieu chieu du lieu va ky vong bat duoc HTTP 400.
     """
-    # Vector x bi khuyet du lieu
     payload = {
         "MedInc": 8.3252,
         "HouseAge": 41.0
@@ -66,7 +72,6 @@ def test_predict_api_missing_feature(client):
                            data=json.dumps(payload),
                            content_type='application/json')
     
-    # Xac thuc HTTP Status Code la 400 (Bad Request) thay vi 500 (Internal Server Error)
     assert response.status_code == 400
     data = json.loads(response.data)
     assert 'error' in data
