@@ -1,7 +1,7 @@
 [![MLOps CI Pipeline](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ci.yml/badge.svg)](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ci.yml)
 # cali-housing-mlops
 
-This project only has CI.
+This project has CI/CD.
 Test the pipeline with AWS EC2.
 
 AWS CloudShell:
@@ -9,5 +9,10 @@ AWS CloudShell:
 
 Test with random features:
 <img width="1698" height="215" alt="image" src="https://github.com/user-attachments/assets/f88dc1ca-0d3a-4fc6-838b-1e92ae3527a8" />
+
+Initial:
+<img width="712" height="87" alt="image" src="https://github.com/user-attachments/assets/08106c52-d8e2-449b-8d2b-2f7635ac0dbc" />
+Later:
+<img width="1373" height="174" alt="image" src="https://github.com/user-attachments/assets/846bd1ae-7033-4d72-9169-5ab5cbf28ca2" />
 
 Done.
