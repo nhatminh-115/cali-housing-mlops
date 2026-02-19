@@ -34,25 +34,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. vào thư mục code
             cd cali-housing-mlops
-            
-            # 2. code mới nhất về
             git pull origin main
-            
-            # 3. Kích hoạt môi trường & Cài lại thư viện
             source venv/bin/activate
             pip install -r requirements.txt
-            
-            # 4. Retrain model trên Server
-            python train.py
-            
-            # 5. Restart lại App
-            # Tìm xem có app nào đang chạy không, nếu có thì kill
-            pkill -f app.py || true
-            
-            # Chạy lại app mới dưới nền (nohup) 
-            nohup python3 app.py > app.log 2>&1 < /dev/null &
-            sleep 3
-            echo "DEPLOYMENT SUCCESSFUL!"
-            exit 0
+            sudo systemctl restart housing
