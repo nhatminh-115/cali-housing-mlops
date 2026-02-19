@@ -1,0 +1,36 @@
+name: MLOps CI Pipeline
+
+# Trigger: Chạy khi có code push vào nhánh main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # Mượn một máy Ubuntu của GitHub
+
+    steps:
+    # 1. Kéo code từ repo về
+    - uses: actions/checkout@v3
+
+    # 2. Cài đặt Python 3.9
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    # 3. Cài thư viện (Flask, Scikit-learn, Pytest...)
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+
+    # 4. CHẠY TEST (Quan trọng nhất)
+    # Lệnh này sẽ chạy file test_pipeline.py ở trên.
+    # Nếu test fail -> Quy trình dừng lại -> Gửi mail báo lỗi cho Bro.
+    - name: Run Model Training & Tests
+      run: |
+        pytest test_pipeline.py
