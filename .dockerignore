@@ -1,0 +1,7 @@
+# Loai bo file model cu de ep buoc Continuous Training trong Docker
+housing_model.pkl
+
+# Loai bo cac thu muc moi truong ao va cache cua Python de toi uu dung luong
+venv/
+__pycache__/
+*.pyc
