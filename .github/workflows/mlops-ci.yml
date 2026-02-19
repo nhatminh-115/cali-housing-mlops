@@ -51,7 +51,7 @@ jobs:
             # Tìm xem có app nào đang chạy không, nếu có thì kill
             pkill -f app.py || true
             
-            # Chạy lại app mới dưới nền (nohup)
+            # Chạy lại app mới dưới nền (nohup) 
             nohup python app.py > app.log 2>&1 &
             
             echo "DEPLOYMENT SUCCESSFUL!"
