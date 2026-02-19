@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cali Housing Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 50px; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; }
+        .result-box { display: none; margin-top: 20px; font-weight: bold; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h2 class="text-center mb-4">California Housing Price Predictor</h2>
+                    <form id="predictionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Median Income (MedInc)</label>
+                                <input type="number" step="any" class="form-control" id="MedInc" value="8.3252" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">House Age (years)</label>
+                                <input type="number" step="any" class="form-control" id="HouseAge" value="41.0" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Average Rooms</label>
+                                <input type="number" step="any" class="form-control" id="AveRooms" value="6.9841" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Average Bedrooms</label>
+                                <input type="number" step="any" class="form-control" id="AveBedrms" value="1.0238" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Population</label>
+                                <input type="number" step="any" class="form-control" id="Population" value="322.0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Average Occupancy</label>
+                                <input type="number" step="any" class="form-control" id="AveOccup" value="2.5556" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Latitude</label>
+                                <input type="number" step="any" class="form-control" id="Latitude" value="37.88" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Longitude</label>
+                                <input type="number" step="any" class="form-control" id="Longitude" value="-122.23" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Predict Price</button>
+                    </form>
+                    
+                    <div id="result" class="alert alert-success result-box text-center"></div>
+                    <div id="error" class="alert alert-danger result-box text-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Ngan chan form submit kieu cu (reload trang)
+            
+            // Thu thap vector dac trung tu giao dien
+            const data = {
+                MedInc: parseFloat(document.getElementById('MedInc').value),
+                HouseAge: parseFloat(document.getElementById('HouseAge').value),
+                AveRooms: parseFloat(document.getElementById('AveRooms').value),
+                AveBedrms: parseFloat(document.getElementById('AveBedrms').value),
+                Population: parseFloat(document.getElementById('Population').value),
+                AveOccup: parseFloat(document.getElementById('AveOccup').value),
+                Latitude: parseFloat(document.getElementById('Latitude').value),
+                Longitude: parseFloat(document.getElementById('Longitude').value)
+            };
+
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                // Thuc hien HTTP POST Request 
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const resultData = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `Predicted Price: $${resultData.predicted_price_usd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    resultDiv.style.display = 'block';
+                } else {
+                    errorDiv.innerHTML = `Error: ${resultData.error}`;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.innerHTML = 'Network error or Server is down.';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
