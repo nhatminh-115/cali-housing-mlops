@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-import pickle
+import joblib
 import numpy as np
 import logging
 
@@ -10,8 +10,7 @@ app = Flask(__name__)
 
 # Load model vao memory ngay khi khoi dong server
 try:
-    with open('housing_model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    model = joblib.load('housing_model.pkl')
     logging.info("Model loaded successfully.")
 except Exception as e:
     logging.error(f"Error loading model: {e}")
