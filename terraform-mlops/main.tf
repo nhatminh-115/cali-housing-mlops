@@ -89,27 +89,4 @@ output "instance_public_ip" {
   description = "Public IP address of the EC2 instance"
   value       = aws_instance.mlops_server.public_ip
 }
-# Tao S3 Bucket de luu tru file State (Luu y: Ten bucket phai la duy nhat tren toan cau)
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "cali-housing-mlops-tf-state-bro-115" # Thay doi hau to neu AWS bao trung ten
-}
 
-# Bat tinh nang Quan ly phien ban (Versioning) de bao ve tinh toan ven du lieu
-resource "aws_s3_bucket_versioning" "state_versioning" {
-  bucket = aws_s3_bucket.terraform_state.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-# Tao bang DynamoDB de thuc thi co che Khoa Trang thai (State Locking)
-resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "cali-housing-mlops-tf-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
