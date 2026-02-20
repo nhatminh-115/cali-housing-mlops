@@ -4,8 +4,6 @@
 
 This repository tracks the step-by-step evolution of an MLOps pipeline. The goal is to transform a locally run machine learning model into a fully automated, containerized, and self-provisioning system on AWS.
 
-
-
 ---
 
 ## Phase 1.0 — Manual Execution (The Baseline)
@@ -52,20 +50,31 @@ What I did:
 
 ---
 
-## Images
+## Phase 5.0 — Data Drift Observability (Event-Driven Monitoring)
+What I did:
+* Engineered a mathematical monitoring script using `numpy` and `pandas` to calculate the **Population Stability Index (PSI)**.
+* Simulated **Covariate Shift** by perturbing the inference data to test system resilience.
+* Configured a Time-based Job Scheduler (CRON) via GitHub Actions to execute drift analysis autonomously.
+* Integrated a **Telegram REST API Webhook** for real-time alerting whenever the PSI score breaches the critical threshold ($PSI \ge 0.2$), signaling the need for model retraining.
 
-**Initial State**                                             
+---
+
+## System Evolution & Metrics
+
+**Initial Manual State**
+
 
 <img width="712" height="87" alt="Initial Manual State" src="https://github.com/user-attachments/assets/08106c52-d8e2-449b-8d2b-2f7635ac0dbc" />
 
+**Intermediate CI/CD Stage** 
 
-
-**Intermediate CI/CD Stage**                                         
 
 <img width="712" height="87" alt="CI/CD Integration" src="https://github.com/user-attachments/assets/846bd1ae-7033-4d72-9169-5ab5cbf28ca2" />
 
-
-
-**Final Containerized Architecture**                      
+**Final Containerized Architecture** 
 
 <img width="1343" height="964" alt="Dockerized Pipeline" src="https://github.com/user-attachments/assets/26016316-c988-4989-91d8-8c346d297b5b" />
+
+**Real-time Telegram Alerting (PSI Drift Detected)**
+
+<img width="1054" height="537" alt="Telegram Alert" src="https://github.com/user-attachments/assets/595e545a-fb4b-455f-b761-3327dff57847" />
