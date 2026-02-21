@@ -4,6 +4,9 @@
 
 This repository tracks the step-by-step evolution of an MLOps pipeline. The goal is to transform a locally run machine learning model into a fully automated, containerized, and self-provisioning system on AWS.
 
+<img width="1935" height="1086" alt="image" src="https://github.com/user-attachments/assets/20ed8226-7311-4044-83b5-2aa0ab9af1dc" />
+
+
 ---
 
 ## Phase 1.0 — Manual Execution (The Baseline)
@@ -30,7 +33,7 @@ What I did:
 
 ---
 
-## Phase 3.0 — Containerized MLOps (CI/CD/CT)
+## Phase 3.0 — Containerized MLOps (CI/CD/Model Packaging)
 What I did:
 * Wrapped the entire application and its dependencies inside **Docker**.
 * **Continuous Training (CT):** Configured the `Dockerfile` to automatically execute `train.py` during the build phase. The model trains and saves its weights natively inside the container.
