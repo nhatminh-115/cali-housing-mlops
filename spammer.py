@@ -4,7 +4,7 @@ import time
 import json
 import pandas as pd
 
-API_URL = "http://127.0.0.1:5000/predict" 
+API_URL = "http://3.90.36.143:5000/predict" 
 
 print("Drift Attack...")
 
