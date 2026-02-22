@@ -46,32 +46,39 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/housing-app:latest
 
   terraform:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./terraform-mlops
-    outputs:
-      EC2_IP: ${{ steps.tf_output.outputs.instance_ip }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
-      - name: Initialize Terraform State
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform init
-      - name: Apply Infrastructure Changes
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform apply -auto-approve
-      - name: Extract Dynamic EC2 IP Address
-        id: tf_output
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: echo "instance_ip=$(terraform output -raw instance_public_ip)" >> "$GITHUB_OUTPUT"
+      needs: build-and-push
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: ./terraform-mlops
+      outputs:
+        EC2_IP: ${{ steps.tf_output.outputs.instance_ip }}
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_wrapper: false 
+
+        - name: Initialize Terraform State
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: terraform init
+
+        - name: Apply Infrastructure Changes
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: terraform apply -auto-approve
+
+        - name: Extract Dynamic EC2 IP Address
+          id: tf_output
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: echo "instance_ip=$(terraform output -raw instance_public_ip)" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: terraform
