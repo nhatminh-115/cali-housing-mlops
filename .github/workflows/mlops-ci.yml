@@ -48,6 +48,9 @@ jobs:
   terraform:
     needs: build-and-push
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform-mlops
     outputs:
       EC2_IP: ${{ steps.tf_output.outputs.instance_ip }}
     steps:
