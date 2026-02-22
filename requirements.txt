@@ -5,3 +5,5 @@ numpy
 pandas
 pytest
 evidently
+mlflow
+supabase
