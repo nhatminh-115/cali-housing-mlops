@@ -1,15 +1,16 @@
 [![MLOps CI Pipeline](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ci.yml/badge.svg)](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ci.yml)
+[![Continuous Training (CT) Pipeline](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ct.yml/badge.svg)](https://github.com/nhatminh-115/cali-housing-mlops/actions/workflows/mlops-ct.yml)
 
 # Cali Housing MLOps: From Manual to GitOps Architecture
 
 This repository tracks the step-by-step evolution of an MLOps pipeline. The goal is to transform a locally run machine learning model into a fully automated, containerized, and self-provisioning system on AWS.
 
-<img width="1935" height="1086" alt="image" src="https://github.com/user-attachments/assets/20ed8226-7311-4044-83b5-2aa0ab9af1dc" />
+<img width="4407" height="3109" alt="MLOps Pipeline" src="https://github.com/user-attachments/assets/1561f69e-d3b7-4835-82b2-d106804170be" />
 
 
 ---
 
-## Phase 1.0 — Manual Execution (The Baseline)
+## Phase 1.0 - Manual Execution (The Baseline)
 What I did:
 * Coded the ML model and Flask API on my local machine.
 * Pushed the source code to GitHub.
@@ -23,7 +24,7 @@ What I did:
 
 ---
 
-## Phase 2.0 — Automated CI/CD
+## Phase 2.0 - Automated CI/CD
 What I did:
 * Introduced GitHub Actions to automate workflows.
 * **Continuous Integration (CI):** Wrote a YAML workflow to automatically run `pytest` every time code is pushed. Used Mocking object to bypass missing model artifacts during testing.
@@ -33,7 +34,7 @@ What I did:
 
 ---
 
-## Phase 3.0 — Containerized MLOps (CI/CD/Model Packaging)
+## Phase 3.0 - Containerized MLOps (CI/CD/Model Packaging)
 What I did:
 * Wrapped the entire application and its dependencies inside **Docker**.
 * **Continuous Training (CT):** Configured the `Dockerfile` to automatically execute `train.py` during the build phase. The model trains and saves its weights natively inside the container.
@@ -42,7 +43,7 @@ What I did:
 
 ---
 
-## Phase 4.0 — Infrastructure as Code (GitOps)
+## Phase 4.0 - Infrastructure as Code (GitOps)
 What I did:
 * Replaced manual AWS Console clicking with **Terraform**.
 * Bootstrapped an S3 Bucket and DynamoDB table locally to act as a Remote State Backend.
@@ -53,7 +54,7 @@ What I did:
 
 ---
 
-## Phase 5.0 — Data Drift Observability (Event-Driven Monitoring)
+## Phase 5.0 - Data Drift Observability (Event-Driven Monitoring)
 What I did:
 * Engineered a mathematical monitoring script using `numpy` and `pandas` to calculate the **Population Stability Index (PSI)**.
 * Simulated **Covariate Shift** by perturbing the inference data to test system resilience.
@@ -62,22 +63,43 @@ What I did:
 
 ---
 
-## System Evolution & Metrics
+## Phase 6.0 - Closed-Loop MLOps Level 1 (Dynamic Decoupling & Automated CT)
+What I did:
+* Migrated local file-based logging to a Serverless database (Supabase).
+* Replaced manual mathematical scripts with **Evidently AI** for multivariate statistical hypothesis testing. Implemented a Sliding Window extraction mechanism (24h) to process only recent inference data and prevent redundant alerting.
+* Separated the machine learning model lifecycle from the Docker image lifecycle. Integrated **MLflow Model Registry** (via DagsHub) as the Single Source of Truth for model artifacts.
+* Split the monolithic CI/CD pipeline. Created a dedicated `mlops-ct.yml` workflow. Upon detecting Data Drift, the monitoring service autonomously triggers the CT pipeline via **GitHub REST API Webhooks**.
+* The Flask application now leverages dynamic model loading. It queries the MLflow Registry at runtime to fetch the latest production-ready model without requiring container rebuilds or EC2 redeployments.
 
-**Initial Manual State**
+*Result:* The architecture is now a fully autonomous, closed-loop system. When covariate shift occurs, the system detects it, alerts the on-call engineer via Telegram, retrains the model, registers the new artifact, and serves it seamlessly with zero human intervention.
+
+However, the current system still lacks of validation gate before promoting models, performance monitoring after serving, rollback logic, multiple instances, etc.
+
+---
+
+## Results and Images
+ 
+ 
+**Database on Supabase (after Injection)**
+
+<img width="2559" height="1470" alt="image" src="https://github.com/user-attachments/assets/39d1895f-bebf-4476-8588-e014ad69ea96" />
+ 
+ 
+ 
+**MLFlow Runs**
+
+<img width="2559" height="1470" alt="image" src="https://github.com/user-attachments/assets/6cbe8a77-502b-4a0b-abc7-847f320855e0" />
+ 
+ 
+ 
+**MLFlow Artifacts**
+
+<img width="2559" height="1472" alt="image" src="https://github.com/user-attachments/assets/8eadefe4-2b53-47cf-b9f2-f975bd26911e" />
+ 
+ 
+ 
+**Alerting via Telegram API**
+
+<img width="975" height="265" alt="image" src="https://github.com/user-attachments/assets/2d44e892-008d-4017-b179-03999d1f2cbc" />
 
 
-<img width="712" height="87" alt="Initial Manual State" src="https://github.com/user-attachments/assets/08106c52-d8e2-449b-8d2b-2f7635ac0dbc" />
-
-**Intermediate CI/CD Stage** 
-
-
-<img width="712" height="87" alt="CI/CD Integration" src="https://github.com/user-attachments/assets/846bd1ae-7033-4d72-9169-5ab5cbf28ca2" />
-
-**Final Containerized Architecture** 
-
-<img width="1343" height="964" alt="Dockerized Pipeline" src="https://github.com/user-attachments/assets/26016316-c988-4989-91d8-8c346d297b5b" />
-
-**Real-time Telegram Alerting (PSI Drift Detected)**
-
-<img width="1054" height="537" alt="Telegram Alert" src="https://github.com/user-attachments/assets/595e545a-fb4b-455f-b761-3327dff57847" />
